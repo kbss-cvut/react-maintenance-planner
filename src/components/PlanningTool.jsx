@@ -1,7 +1,5 @@
 import React, {Component} from "react"
 import moment from "moment"
-import { HiOutlinePencil } from "react-icons/hi";
-
 import Timeline, {
   TodayMarker,
   CustomMarker
@@ -11,6 +9,8 @@ import Xarrow from "react-xarrows"
 import './../assets/PlanningTool.css'
 import PropTypes from "prop-types"
 import Popup from './Popup'
+import { HiOutlinePencil } from "react-icons/hi";
+import { IoTrashOutline } from "react-icons/io5";
 
 const keys = {
   groupIdKey: "id",
@@ -558,7 +558,7 @@ class PlanningTool extends Component {
           {item.showIcons &&
           <span
               onClick={(e) => this.handleEditMode(e, null, item.id)}
-              className="edit-icon"><HiOutlinePencil/>
+              className="icon"><HiOutlinePencil/>
           </span>
           }
         </div>
@@ -660,6 +660,34 @@ class PlanningTool extends Component {
     }
   }
 
+  deleteResource = (e, groupId) => {
+    e.stopPropagation();
+
+    let {groups} = this.state;
+
+    for (let i=0; i < groups.length; i++) {
+      if (groups[i].id === groupId) {
+        groups.splice(i, 1)
+      }
+      if (groups[i].parent === groupId) {
+        deleteResourceChildren(i);
+      }
+    }
+
+    function deleteResourceChildren(resourceIndex) {
+      while (groups[resourceIndex].parent === groupId) {
+        while (groups[resourceIndex + 1].parent === groups[resourceIndex].id) {
+          groups.splice(resourceIndex + 1, 1)
+        }
+        groups.splice(resourceIndex, 1)
+      }
+    }
+
+    this.setState({
+      groups: groups
+    })
+  }
+
   handleInputFieldValue = (e, groupId, itemId) => {
     let {groups} = this.state
     let {items} = this.state
@@ -714,10 +742,10 @@ class PlanningTool extends Component {
 
           {group.isEditMode && this.renderEditMode(group.id)}
           {group.showIcons &&
-          <div
-              onClick={(e) => this.handleEditMode(e, group.id)}
-              className="edit-icon"><HiOutlinePencil/>
-          </div>
+              <div className="icons">
+                <HiOutlinePencil className="icon" onClick={(e) => this.handleEditMode(e, group.id)}/>
+                <IoTrashOutline className="icon" onClick={(e) => this.deleteResource(e, group.id)}/>
+              </div>
           }
         </div>
     )
