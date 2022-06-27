@@ -1,6 +1,7 @@
 import React, {Component} from "react"
 import moment from "moment"
-import { HiOutlinePencil } from "react-icons/hi";
+import {HiOutlinePencil} from "react-icons/hi";
+import {FaPlus} from 'react-icons/fa'
 
 import Timeline, {
   TodayMarker,
@@ -11,6 +12,7 @@ import Xarrow from "react-xarrows"
 import './../assets/PlanningTool.css'
 import PropTypes from "prop-types"
 import Popup from './Popup'
+import Modal from './Modal'
 
 const keys = {
   groupIdKey: "id",
@@ -88,6 +90,12 @@ class PlanningTool extends Component {
     const showIcons = false
 
     this.timeline = React.createRef()
+    this.addResourceRefs = {
+      name: React.createRef(),
+      child: React.createRef(),
+    }
+
+    const addResourceModal = false
 
     this.state = {
       groups,
@@ -98,7 +106,8 @@ class PlanningTool extends Component {
       sidebarResizing,
       popup,
       milestones,
-      showIcons
+      showIcons,
+      addResourceModal,
     }
   }
 
@@ -111,7 +120,7 @@ class PlanningTool extends Component {
 
     const group = groups.filter(g => g.show)[newGroupOrder]
 
-    this.addUndoItem(items.find(i => i.id === itemId))
+    this.addUndoItem(items.find(i => i.id === itemId), 'item-edit', {}, true)
 
     this.setState({
       items: items.map(item =>
@@ -135,7 +144,7 @@ class PlanningTool extends Component {
 
     const item = items.find(item => item.id === itemId)
 
-    this.addUndoItem(item)
+    this.addUndoItem(item, 'item-edit', {}, true)
 
     let start = moment(edge === "left" ? time : item.start)
     let end = moment(edge === "left" ? item.end : time)
@@ -375,9 +384,23 @@ class PlanningTool extends Component {
   /**
    * Adding item into list of returned changes
    */
-  addUndoItem = (item) => {
-    this.redoActions = []
-    this.actions.push(Object.assign({}, item))
+  addUndoItem = (item, actionName, params = {}, removeRedos = false) => {
+    if (removeRedos) {
+      this.redoActions = []
+    }
+    this.actions.push({
+      item: Object.assign({}, item),
+      actionName,
+      params,
+    })
+  }
+
+  addRedoItem = (item, actionName, params = {}) => {
+    this.redoActions.push({
+      item,
+      actionName,
+      params,
+    })
   }
 
   /**
@@ -387,19 +410,47 @@ class PlanningTool extends Component {
     if (this.actions.length <= 0) {
       return
     }
-    const {items} = this.state
+    const {items, groups} = this.state
 
-    const undoItem = this.actions.pop()
-    this.redoActions.push(items.find(i => i.id === undoItem.id))
+    const undoAction = this.actions.pop()
 
-    this.setState({
-      items: items.map(item =>
-        item.id === undoItem.id
-          ? Object.assign({}, undoItem)
-          : item
-      ),
-      draggedItem: undefined
-    })
+    if (undoAction.actionName === 'item-edit') {
+      const undoItem = undoAction.item
+      this.addRedoItem(items.find(i => i.id === undoItem.id), undoAction.actionName)
+
+      this.setState({
+        items: items.map(item =>
+          item.id === undoItem.id
+            ? Object.assign({}, undoItem)
+            : item
+        ),
+        draggedItem: undefined
+      })
+      return
+    }
+    if (undoAction.actionName === 'resource-add') {
+      const undoGroup = undoAction.item
+
+      const group = groups.find(g => g.id === undoGroup.id)
+      const parent = groups.find(p => p.id === group.parent)
+      const index = groups.indexOf(group)
+
+      if (index > -1) {
+        groups.splice(index, 1)
+        this.addRedoItem(group, undoAction.actionName, {
+          index,
+        })
+      }
+
+      if (groups.filter(g => g.parent === parent.id).length <= 0) {
+        parent.hasChildren = false
+      }
+
+      this.setState({
+        groups,
+      })
+      return
+    }
   }
 
   /**
@@ -409,19 +460,37 @@ class PlanningTool extends Component {
     if (this.redoActions.length <= 0) {
       return
     }
-    const {items} = this.state
+    const {items, groups} = this.state
 
-    const redoItem = this.redoActions.pop()
-    this.actions.push(items.find(i => i.id === redoItem.id))
+    console.log(this.redoActions)
+    const redoAction = this.redoActions.pop()
 
-    this.setState({
-      items: items.map(item =>
-        item.id === redoItem.id
-          ? Object.assign({}, redoItem)
-          : item
-      ),
-      draggedItem: undefined
-    })
+    if (redoAction.actionName === 'item-edit') {
+      const redoItem = redoAction.item
+      this.addUndoItem(items.find(i => i.id === redoItem.id), redoAction.actionName)
+
+      this.setState({
+        items: items.map(item =>
+          item.id === redoItem.id
+            ? Object.assign({}, redoItem)
+            : item
+        ),
+        draggedItem: undefined
+      })
+      return
+    }
+    if (redoAction.actionName === 'resource-add') {
+      const redoGroup = redoAction.item
+      this.addUndoItem(redoGroup, redoAction.actionName)
+
+      groups.splice(redoAction.params.index, 0, redoGroup)
+      groups.find(g => g.id === redoGroup.parent).hasChildren = true
+
+      this.setState({
+        groups,
+      })
+      return
+    }
   }
 
   /**
@@ -463,20 +532,20 @@ class PlanningTool extends Component {
 
   renderPopup = (popup) => {
     return (
-        <>
-          {popup.open && (
-              popup.custom ?
-                  popup.custom({
-                    item: popup.item,
-                    group: popup.group,
-                  })
-                  :
-                  <Popup
-                      item={popup.item}
-                      group={popup.group}
-                  />
-          )}
-        </>
+      <>
+        {popup.open && (
+          popup.custom ?
+            popup.custom({
+              item: popup.item,
+              group: popup.group,
+            })
+            :
+            <Popup
+              item={popup.item}
+              group={popup.group}
+            />
+        )}
+      </>
     )
   }
 
@@ -505,31 +574,31 @@ class PlanningTool extends Component {
 
     return (
       <div
-          onMouseEnter={() => this.handleShowIconsOnMouseEnter(null, item.id)}
-          onMouseLeave={() => this.handleShowIconsOnMouseLeave(null, item.id)}
-          onKeyUp={(e) => this.handleInputFieldOnKeyUp(e, null, item.id)}
-          {...getItemProps({
-            style: {
-              background: backgroundColor,
-              color: color,
-              minWidth: 20,
-            },
-            /**
-             * Event handler when click on an item
-             */
-            onMouseDown: () => {
-              item.selected = true
-              this.removeHighlight()
-              this.highlightChildren(item)
-              this.showItemInfo(this.state.items.find(i => i.id === item.id))
-              this.setState({
-                items: this.state.items
-              })
-            },
+        onMouseEnter={() => this.handleShowIconsOnMouseEnter(null, item.id)}
+        onMouseLeave={() => this.handleShowIconsOnMouseLeave(null, item.id)}
+        onKeyUp={(e) => this.handleInputFieldOnKeyUp(e, null, item.id)}
+        {...getItemProps({
+          style: {
+            background: backgroundColor,
+            color: color,
+            minWidth: 20,
+          },
+          /**
+           * Event handler when click on an item
+           */
+          onMouseDown: () => {
+            item.selected = true
+            this.removeHighlight()
+            this.highlightChildren(item)
+            this.showItemInfo(this.state.items.find(i => i.id === item.id))
+            this.setState({
+              items: this.state.items
+            })
+          },
 
-          })}
-          id={'item-' + item.id}
-          className={item.canMove ? 'movable-item' : 'static-item'}
+        })}
+        id={'item-' + item.id}
+        className={item.canMove ? 'movable-item' : 'static-item'}
       >
         {/*left resize*/}
         {itemContext.selected && (item.canResize === 'both' || item.canResize === 'left') ?
@@ -557,8 +626,8 @@ class PlanningTool extends Component {
           {item.isEditMode ? this.renderEditMode(item.id) : itemContext.title}
           {item.showIcons &&
           <span
-              onClick={(e) => this.handleEditMode(e, null, item.id)}
-              className="edit-icon"><HiOutlinePencil/>
+            onClick={(e) => this.handleEditMode(e, null, item.id)}
+            className="edit-icon"><HiOutlinePencil/>
           </span>
           }
         </div>
@@ -677,7 +746,6 @@ class PlanningTool extends Component {
   }
 
   handleInputFieldOnKeyUp = (e, groupId, itemId) => {
-    console.log(itemId)
     if (e.key === 'Enter' && e.ctrlKey) {
       this.handleEditMode(e, groupId, itemId);
       this.handleInputFieldValue(e, groupId, itemId)
@@ -687,39 +755,122 @@ class PlanningTool extends Component {
 
   renderEditMode = () => {
     return (
-        <input
-            autoFocus
-            onClick={e => e.stopPropagation()}
-            placeholder="Ctrl+Enter / Escape" />
+      <input
+        autoFocus
+        onClick={e => e.stopPropagation()}
+        placeholder="Ctrl+Enter / Escape"/>
+    )
+  }
+
+  getHighestGroupTreeIndex = (group) => {
+    if (!group.hasChildren) {
+      return this.state.groups.indexOf(group)
+    }
+
+    return this.getHighestGroupTreeIndex(this.state.groups.filter(g => g.parent === group.id).slice(-1)[0])
+  }
+
+  handleAddResource = (group) => {
+    this.setState({
+      addResourceModal: group
+    })
+  }
+
+  addResource = (group, title, child) => {
+    const {groups} = this.state
+
+    const newId = Math.max(...groups.map(object => {
+      return object.id
+    })) + 1
+
+    const newGroup = {
+      id: newId,
+      level: group.level,
+      open: false,
+      parent: group.parent,
+      show: true,
+      showIcons: false,
+      title: title,
+    }
+
+    let groupIndex
+    if (child) {
+      groupIndex = this.state.groups.indexOf(group)
+      newGroup.parent = group.id
+      newGroup.level = group.level + 1
+      group.open = true
+      group.hasChildren = true
+    } else {
+      groupIndex = this.getHighestGroupTreeIndex(group)
+    }
+    groups.splice(groupIndex + 1, 0, newGroup)
+
+    this.setState({
+      groups: groups,
+      addResourceModal: false,
+    })
+
+    this.addUndoItem(newGroup, 'resource-add')
+  }
+
+  renderAddResourceModal = (group) => {
+    return (
+      <Modal
+        title={`Add resource - ${group.title}`}
+        onClose={() => {
+          this.setState({
+            addResourceModal: false,
+          })
+        }}
+        onSubmit={() => {
+          this.addResource(group, this.addResourceRefs.name.current.value, this.addResourceRefs.child.current.checked)
+          this.addResourceRefs.name.current.value = ''
+          this.addResourceRefs.child.current.checked = false
+        }}
+      >
+        <label>
+          Insert resource name
+          <input type="text" placeholder="Resource name" ref={this.addResourceRefs.name}/>
+        </label>
+        <label>
+          Do you want to create this resource as a child?
+          <input type="checkbox" placeholder="yes" ref={this.addResourceRefs.child}/>
+        </label>
+      </Modal>
     )
   }
 
   renderGroup = (group) => {
     return (
+      <div className='resource-group'>
         <div
-            className="resource"
-            onClick={() => this.toggleGroup(group.id)}
-            style={{cursor: 'pointer'}}
+          className="resource"
+          onClick={() => this.toggleGroup(group.id)}
+          style={{cursor: 'pointer', paddingLeft: group.level * 20}}
         >
           {
             group.hasChildren ?
-                group.isEditMode ?
-                    group.open ? "[-] "
-                        : "[+] "
-                    : group.open ? `[-] ${group.title} `
-                        : `[+] ${group.title} `
-                : group.isEditMode ? ""
-                    : group.title
+              group.isEditMode ?
+                group.open ? "[-] "
+                  : "[+] "
+                : group.open ? `[-] ${group.title} `
+                  : `[+] ${group.title} `
+              : group.isEditMode ? ""
+                : group.title
           }
 
           {group.isEditMode && this.renderEditMode(group.id)}
           {group.showIcons &&
           <div
-              onClick={(e) => this.handleEditMode(e, group.id)}
-              className="edit-icon"><HiOutlinePencil/>
+            onClick={(e) => this.handleEditMode(e, group.id)}
+            className="edit-icon"><HiOutlinePencil/>
           </div>
           }
         </div>
+        {group.showIcons &&
+        <FaPlus className="add-resource" onClick={() => this.handleAddResource(group)}/>
+        }
+      </div>
     )
   }
 
@@ -733,15 +884,13 @@ class PlanningTool extends Component {
     const newGroups = groups.filter((g) => g.show).map((group) => {
       return Object.assign({}, group, {
         title:
-            <div
-                onMouseEnter={() => this.handleShowIconsOnMouseEnter(group.id)}
-                onMouseLeave={() => this.handleShowIconsOnMouseLeave(group.id)}
-                onKeyUp={(e) => this.handleInputFieldOnKeyUp(e, group.id)}
-                style={{paddingLeft: group.level * 20}}
-
-            >
-              {this.renderGroup(group)}
-            </div>
+          <div
+            onMouseEnter={() => this.handleShowIconsOnMouseEnter(group.id)}
+            onMouseLeave={() => this.handleShowIconsOnMouseLeave(group.id)}
+            onKeyUp={(e) => this.handleInputFieldOnKeyUp(e, group.id)}
+          >
+            {this.renderGroup(group)}
+          </div>
       })
     })
 
@@ -749,31 +898,31 @@ class PlanningTool extends Component {
       <>
         <div className="timeline-container">
           <Timeline className="timeline"
-            ref={this.timeline}
-            groups={newGroups}
-            items={items}
-            keys={keys}
-            fullUpdate
-            itemTouchSendsClick={false}
-            stackItems
-            itemHeightRatio={0.75}
-            canMove={true}
-            canResize={"both"}
-            sidebarWidth={sidebarWidth}
-            defaultTimeStart={defaultTimeStart}
-            defaultTimeEnd={defaultTimeEnd}
-            onTimeChange={this.onTimeChange}
-            itemRenderer={this.itemRenderer}
-            onItemMove={this.handleItemMove}
-            onItemResize={this.handleItemResize}
-            onItemDeselect={this.itemDeselected}
-            onItemDrag={this.handleItemDrag}
-            handleSidebarResize={{
-              down: this.onSidebarDown,
-              move: this.onSidebarMove,
-              up: this.onSidebarUp,
-              resizing: this.state.sidebarResizing,
-            }}
+                    ref={this.timeline}
+                    groups={newGroups}
+                    items={items}
+                    keys={keys}
+                    fullUpdate
+                    itemTouchSendsClick={false}
+                    stackItems
+                    itemHeightRatio={0.75}
+                    canMove={true}
+                    canResize={"both"}
+                    sidebarWidth={sidebarWidth}
+                    defaultTimeStart={defaultTimeStart}
+                    defaultTimeEnd={defaultTimeEnd}
+                    onTimeChange={this.onTimeChange}
+                    itemRenderer={this.itemRenderer}
+                    onItemMove={this.handleItemMove}
+                    onItemResize={this.handleItemResize}
+                    onItemDeselect={this.itemDeselected}
+                    onItemDrag={this.handleItemDrag}
+                    handleSidebarResize={{
+                      down: this.onSidebarDown,
+                      move: this.onSidebarMove,
+                      up: this.onSidebarUp,
+                      resizing: this.state.sidebarResizing,
+                    }}
           >
             {/*current time marker*/}
             <TodayMarker interval={1000}/>
@@ -836,10 +985,14 @@ class PlanningTool extends Component {
           </div>
         </div>
 
+        {this.state.addResourceModal &&
+        this.renderAddResourceModal(this.state.addResourceModal)
+        }
+
         {/*<div onClick={() => this.focusItems(items.filter(item => (item.id === 8 || item.id === 10)))}>
           focus
         </div>*/}
-        </>
+      </>
     )
   }
 }
