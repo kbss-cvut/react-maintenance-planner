@@ -158,6 +158,7 @@
   flex-direction: row;
   align-items: center;
   min-height: 2rem;
+  position: relative;
 }
 
 .resource .edit-icon {
@@ -176,4 +177,70 @@
 
 .rct-items .edit-icon svg {
   margin-left: 1rem;
+}
+
+.resource-group {
+  position: relative;
+}
+
+
+.add-resource {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  font-size: 12px;
+  border: 1px solid #000;
+  border-radius: 100%;
+  padding: 1px;
+  margin: 0 auto;
+  cursor: pointer;
+  z-index: 1000;
+  transition-duration: .15s;
+}
+
+.add-resource:hover {
+  transform: scale(1.25);
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row {
+  overflow: visible;
+  overflow-x: clip;
+}
+
+.react-calendar-timeline .rct-sidebar {
+  overflow: visible;
+}
+
+.action-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding: 0 5px;
+}
+
+.action-icons .remove-icon {
+  transform: rotate(45deg);
+}
+
+.action-icons .reorder-icons {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  gap: 2px;
+}
+
+.order-icon.disabled svg {
+  fill: #c3c3c3;
+}
+
+.action-icon {
+  opacity: 1;
+  transition-duration: .5s;
+}
+
+.action-icon:hover {
+  opacity: .5;
 }
