@@ -1,19 +1,11 @@
 import React from "react"
 import moment from "moment"
 import ProgressBar from "./ProgressBar";
+import PropTypes from "prop-types";
 
-const Popup = ({item, group}) => {
+const Popup = ({item, group, progress}) => {
   let dateStart = moment(item.start, 'x');
   let dateEnd = moment(item.end, 'x');
-
-  const getTaskProgress = () => {
-      const plannedWorkedTime = item.plannedWorkTime;
-      const workedTime = item.workTime;
-      const taskProgress = (workedTime/plannedWorkedTime);
-      if (!taskProgress) return 0;
-      return taskProgress;
-
-    }
 
   return (
     <div className="popup">
@@ -33,15 +25,20 @@ const Popup = ({item, group}) => {
       </div>
         <div>
             <p>
-                Task progress: {getTaskProgress() ?
-                (getTaskProgress() * 100) + "%"
+                Task progress: {progress ?
+                (progress * 100) + "%"
                 :
                 "Not defined"}
             </p>
-            {<ProgressBar progress={getTaskProgress()}/>}
+            {<ProgressBar progress={progress}/>}
         </div>
     </div>
   )
+}
+
+Popup.protoTypes = {
+    item: PropTypes.object.isRequired,
+    group: PropTypes.object.isRequired,
 }
 
 export default Popup

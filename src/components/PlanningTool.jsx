@@ -53,7 +53,7 @@ class PlanningTool extends Component {
       this.setItemDefaults(item)
     }
 
-    //sorting groups tree to order by parent
+    //sorting dataTest tree to order by parent
     groups = groups.sort((a, b) => a.level - b.level).reduce((accumulator, currentValue) => {
       let item = accumulator.find(x => x.id === currentValue.parent)
       let index = accumulator.indexOf(item)
@@ -62,8 +62,6 @@ class PlanningTool extends Component {
       accumulator.splice(index, 0, currentValue)
       return accumulator
     }, [])
-
-    console.log(props.defaultTimeStart)
 
     const defaultTimeStart = props.defaultTimeStart != null ? moment(props.defaultTimeStart)
       : (items.length > 0 ? moment(items[0].start).add(-12, 'hour') : moment())
@@ -879,6 +877,15 @@ class PlanningTool extends Component {
   }
 
   renderPopup = (popup) => {
+    const getTaskProgress = (item) => {
+      const plannedWorkedTime = item?.plannedWorkTime;
+      const workedTime = item?.workTime;
+      const taskProgress = (workedTime/plannedWorkedTime);
+      if (!taskProgress) return 0;
+      return taskProgress;
+    }
+
+    let progress = getTaskProgress(popup?.item)
     return (
       <>
         {popup.open && (
@@ -891,6 +898,7 @@ class PlanningTool extends Component {
             <Popup
               item={popup.item}
               group={popup.group}
+              progress={progress}
             />
         )}
       </>

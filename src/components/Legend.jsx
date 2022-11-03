@@ -1,12 +1,13 @@
 import React from "react";
 import Constants from "../constants/Constants";
+import PropTypes from "prop-types";
 
 const Legend = ({ title, legendItems }) => {
   let defaultItems = Constants.DEFAULT_LEGEND_ITEMS;
 
   return (
     <div className="explanatory-notes">
-      <h3>{title}</h3>
+      <h3>{title ? title : "Legend"}</h3>
       <React.Fragment>
         {legendItems.map((item, index) => {
           return (
@@ -33,6 +34,11 @@ const Legend = ({ title, legendItems }) => {
       </React.Fragment>
     </div>
   );
+};
+
+Legend.propTypes = {
+  title: PropTypes.string,
+  legendItems: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default Legend;
