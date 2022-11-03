@@ -1739,7 +1739,7 @@ class PlanningTool extends Component {
             {this.renderMilestones()}
 
           </Timeline>
-          //TODO: Remove Legend and Popup to remove logic from it
+          {/*TODO:Remove Legend and Popup to remove logic from it*/}
           <div className="explanatory-notes-container">
             <Legend legendItems={this.props.legendItems} title="Legend"/>
             {this.renderPopup(popup)}
