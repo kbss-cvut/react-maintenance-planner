@@ -1,0 +1,438 @@
+[
+  {
+    "id": 0,
+    "title": "hyd. power",
+    "parent": null,
+    "open": false,
+    "show": true,
+    "level": 0
+  },
+  {
+    "id": 1,
+    "title": "el. power",
+    "parent": null,
+    "open": false,
+    "show": true,
+    "level": 0
+  },
+  {
+    "id": 2,
+    "title": "A320",
+    "hasChildren": true,
+    "parent": null,
+    "open": false,
+    "show": true,
+    "level": 0
+  },
+  {
+    "id": 3,
+    "title": "unknown",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 4,
+    "title": "LDG",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 5,
+    "title": "-",
+    "parent": 4,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 6,
+    "title": "SHM",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 7,
+    "title": "EXT",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 8,
+    "title": "51132",
+    "parent": 6,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 9,
+    "title": "ENG",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 10,
+    "title": "50279",
+    "parent": 9,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 11,
+    "title": "COCKPIT",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 12,
+    "title": "AVIO",
+    "hasChildren": true,
+    "parent": 11,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 13,
+    "title": "50814",
+    "parent": 12,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 14,
+    "title": "FWD WET AREA",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 15,
+    "title": "INT",
+    "hasChildren": true,
+    "parent": 14,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 16,
+    "title": "PAX CABIN",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 17,
+    "title": "INT",
+    "hasChildren": true,
+    "parent": 16,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 18,
+    "title": "50512",
+    "parent": 17,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 19,
+    "title": "51307",
+    "parent": 17,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 20,
+    "title": "50499",
+    "parent": 17,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 21,
+    "title": "T/E",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 22,
+    "title": "EXT",
+    "hasChildren": true,
+    "parent": 21,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 23,
+    "title": "MANHOLES",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 24,
+    "title": "EXT",
+    "hasChildren": true,
+    "parent": 23,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 25,
+    "title": "LEADING EDGE",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 26,
+    "title": "EXT",
+    "hasChildren": true,
+    "parent": 25,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 27,
+    "title": "INT",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 28,
+    "title": "unknown",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 29,
+    "title": "51474",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 30,
+    "title": "51460",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 31,
+    "title": "51130",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 32,
+    "title": "550644",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 33,
+    "title": "50619",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 34,
+    "title": "51335",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 35,
+    "title": "50251",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 36,
+    "title": "50825",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 37,
+    "title": "51352",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 38,
+    "title": "51602",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 39,
+    "title": "50712",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 40,
+    "title": "51443",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 41,
+    "title": "51606",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 42,
+    "title": "51351",
+    "parent": 28,
+    "open": false,
+    "show": false,
+    "level": 3
+  },
+  {
+    "id": 43,
+    "title": "SEAT",
+    "hasChildren": true,
+    "parent": 3,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 44,
+    "title": "LDG",
+    "hasChildren": true,
+    "parent": 11,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 45,
+    "title": "INT",
+    "hasChildren": true,
+    "parent": 11,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 46,
+    "title": "AC BAY",
+    "hasChildren": true,
+    "parent": 2,
+    "open": false,
+    "show": false,
+    "level": 1
+  },
+  {
+    "id": 47,
+    "title": "EXT",
+    "hasChildren": true,
+    "parent": 46,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 48,
+    "title": "AVIO",
+    "hasChildren": true,
+    "parent": 14,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 49,
+    "title": "EXT",
+    "hasChildren": true,
+    "parent": 11,
+    "open": false,
+    "show": false,
+    "level": 2
+  },
+  {
+    "id": 50,
+    "title": "ENG",
+    "hasChildren": true,
+    "parent": 11,
+    "open": false,
+    "show": false,
+    "level": 2
+  }
+]

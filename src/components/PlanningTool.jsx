@@ -2,12 +2,11 @@ import React, {Component} from "react"
 import moment from "moment"
 import {HiOutlinePencil} from "react-icons/hi";
 import {FaPlus, FaArrowUp, FaArrowDown} from 'react-icons/fa'
-
 import Timeline, {
-  TodayMarker,
-  CustomMarker
-} from "./timeline/src"
-import './timeline/src/lib/Timeline.css'
+  CustomMarker,
+  TodayMarker
+} from "react-calendar-timeline"
+import 'react-calendar-timeline/lib/Timeline.css'
 import Xarrow from "react-xarrows"
 import './../assets/PlanningTool.css'
 import PropTypes from "prop-types"
