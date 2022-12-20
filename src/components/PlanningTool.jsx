@@ -16,6 +16,7 @@ import Modal from './Modal'
 import EditItemModal from './EditItemModal'
 import Constants from '../constants/Constants'
 import Legend from "./Legend";
+import SearchBar from './SearchBar'
 
 const keys = {
   groupIdKey: "id",
@@ -896,6 +897,14 @@ class PlanningTool extends Component {
     updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
   }
 
+  focusItem = (item) => {
+    if (!item) {
+      return
+    }
+
+    this.focusItems([item])
+  }
+
   /**
    * Focuses group of items in timeline
    */
@@ -905,8 +914,10 @@ class PlanningTool extends Component {
     }
 
     this.removeHighlight()
+    const groupIds = []
     let dateStart = items[0].start.clone()
     let dateEnd = items[0].end.clone()
+    groupIds.push(items[0].group)
     items[0].highlight = true
     items.shift()
 
@@ -919,11 +930,32 @@ class PlanningTool extends Component {
         dateEnd = item.end.clone()
       }
       item.highlight = true
+      groupIds.push(item.group)
     }
 
     dateStart.subtract(1, 'hour')
     dateEnd.add(2, 'hour')
+    this.showGroups(groupIds)
     this.timeline.current.updateScrollCanvas(dateStart.valueOf(), dateEnd.valueOf())
+  }
+
+  showGroups = (groupIds) => {
+    const {groups} = this.state
+
+    for (const id of groupIds) {
+      let group = groups.find(g => g.id === id)
+      group.show = true
+      while(group.parent){
+        this.getSiblings(group).forEach(g => g.show = true)
+        group = groups.find(g => g.id === group.parent)
+        group.show = true
+        group.open = true
+      }
+    }
+
+    this.setState({
+      groups
+    })
   }
 
   renderPopup = (popup) => {
@@ -1772,6 +1804,11 @@ class PlanningTool extends Component {
     return (
       <>
         <div className="timeline-container">
+          <SearchBar
+            items={items}
+            groups={groups}
+            focus={this.focusItem}
+          />
           <Timeline className="timeline"
                     ref={this.timeline}
                     groups={newGroups}
