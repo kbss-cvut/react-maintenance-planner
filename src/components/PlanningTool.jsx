@@ -115,6 +115,7 @@ class PlanningTool extends Component {
   setItemDefaults = (item) => {
     item.title = item.title != null ? item.title : ''
     item.parent = item.parent != null ? item.parent : null
+    item.linkedItemsIDs = item.linkedItemsIDs != null ? item.linkedItemsIDs : []
     item.className = item.className != null ? item.className : 'item'
     item.bgColor = item.bgColor != null ? item.bgColor : '#2196F3'
     item.color = item.color != null ? item.color : '#ffffff'
@@ -343,6 +344,15 @@ class PlanningTool extends Component {
       const parent = this.state.items.find(i => i.id === item.parent)
       parent.highlight = true
       this.highlightParents(parent)
+    }
+  }
+
+  highlightLinkedItems = (item) => {
+    const items = this.state.items.filter(i => i.linkedItemsIDs.includes(item.id))
+
+    for (const item of items) {
+      item.highlight = true
+      this.highlightLinkedItems(item)
     }
   }
 
@@ -995,6 +1005,7 @@ class PlanningTool extends Component {
 
               this.highlightChildren(item)
               this.highlightParents(item)
+              this.highlightLinkedItems(item)
               this.showItemInfo(this.state.items.find(i => i.id === item.id))
             }
 
