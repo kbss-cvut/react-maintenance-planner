@@ -36,7 +36,7 @@ const SearchBar = (props) => {
   const getItems = () => {
     let filteredItems = items
     if (searchText.length > 0) {
-      filteredItems = items.filter(item => String(item.title).toLocaleLowerCase().startsWith(searchText.toLocaleLowerCase()))
+      filteredItems = items.filter(item => String(item.title).toLocaleLowerCase().includes(searchText.toLocaleLowerCase()))
     }
 
     return <>
@@ -45,7 +45,7 @@ const SearchBar = (props) => {
           className="search-bar-result"
           onClick={() => props.focus(item)}
         >
-          {getItemGroupPath(item)} {item.title.length > 0 ? item.title : 'no title'}
+          {getItemGroupPath(item)} <span className="search-bar-result-item">{item.title.length > 0 ? item.title : 'no title'}</span>
         </div>
       )}
     </>

@@ -53,3 +53,8 @@
 .search-bar-result:nth-child(2n) {
   background-color: #e0e0e0;
 }
+
+.search-bar-result-item {
+  display: block;
+  font-weight: 700;
+}
